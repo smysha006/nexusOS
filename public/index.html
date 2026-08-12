@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus | Mini Inventory System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class='bx bx-cube-alt logo-icon'></i>
+        <span>Nexus</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active" data-target="dashboard-view"><i class='bx bxs-dashboard'></i> Dashboard</a>
+        <a href="#" class="nav-item" data-target="inventory-view"><i class='bx bx-list-ul'></i> Inventory</a>
+        <a href="#" class="nav-item" data-target="activity-view"><i class='bx bx-history'></i> Activity Log</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="top-search">
+          <i class='bx bx-search'></i>
+          <input type="text" placeholder="Search items, categories, invoices...">
+          <span style="color:var(--text-secondary); font-size:0.75rem; margin-left:auto;">Ctrl + K</span>
+        </div>
+        
+        <div class="header-actions">
+          <button class="header-btn"><i class='bx bx-calendar'></i> May 11 - May 17, 2025 <i class='bx bx-chevron-down'></i></button>
+          <button class="header-btn primary"><i class='bx bx-download'></i> Export Report</button>
+          
+          <button id="theme-toggle" class="btn-icon"><i class='bx bx-sun'></i></button>
+          <button class="btn-icon" style="position:relative;">
+            <i class='bx bx-bell'></i>
+            <span style="position:absolute; top:4px; right:4px; background:var(--danger); width:8px; height:8px; border-radius:50%;"></span>
+          </button>
+          
+          <div class="user-profile">
+            <div class="avatar-circle">A</div>
+            <div class="user-info">
+              <span>Admin</span>
+              <small>System</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="view-container">
+        <!-- Dashboard View -->
+        <section id="dashboard-view" class="view active">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class='bx bx-package'></i></div>
+              <div class="kpi-info">
+                <h3>Total Products</h3>
+                <p id="kpi-total-products">0</p>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class='bx bx-category'></i></div>
+              <div class="kpi-info">
+                <h3>Categories</h3>
+                <p id="kpi-total-categories">0</p>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class='bx bx-box'></i></div>
+              <div class="kpi-info">
+                <h3>Total Stock Items</h3>
+                <p id="kpi-total-stock">0</p>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class='bx bx-rupee'></i></div>
+              <div class="kpi-info">
+                <h3>Inventory Value</h3>
+                <p id="kpi-total-value">₹0</p>
+              </div>
+            </div>
+            <div class="kpi-card alert-card warning">
+              <div class="kpi-icon"><i class='bx bx-error-circle'></i></div>
+              <div class="kpi-info">
+                <h3>Low Stock</h3>
+                <p id="kpi-low-stock">0</p>
+              </div>
+            </div>
+            <div class="kpi-card alert-card danger">
+              <div class="kpi-icon"><i class='bx bx-x-circle'></i></div>
+              <div class="kpi-info">
+                <h3>Out of Stock</h3>
+                <p id="kpi-out-stock">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid Row 1 -->
+          <div class="dashboard-grid">
+            <!-- Exact Image Replica: Inventory Distribution -->
+            <div class="widget">
+              <div class="widget-header">
+                <h2>Inventory Distribution (Value)</h2>
+                <select class="widget-dropdown"><option>By Value</option></select>
+              </div>
+              
+              <div class="doughnut-layout">
+                <div class="doughnut-chart-wrapper">
+                  <div class="chart-center-text">
+                    <small>Total Value</small>
+                    <strong id="doughnut-total-value">₹0</strong>
+                  </div>
+                  <canvas id="category-value-chart"></canvas>
+                </div>
+                
+                <div class="custom-legend" id="custom-legend-container">
+                  <!-- Custom Legend Items injected via JS -->
+                </div>
+              </div>
+              
+              <div class="chart-insight-box" id="doughnut-insight-box">
+                <i class='bx bx-info-circle'></i> Loading insight...
+              </div>
+            </div>
+
+            <!-- Smart Inventory Alerts -->
+            <div class="widget">
+              <div class="widget-header" style="margin-bottom:8px;">
+                <h2>Smart Inventory Alerts</h2>
+                <a href="#" style="font-size:0.8rem; color:var(--primary-color); text-decoration:none;">View All</a>
+              </div>
+              <div class="alert-list-container">
+                <p style="font-size:0.75rem; color:var(--danger); margin-bottom:12px;">Action Required</p>
+                <ul id="alert-list" class="mini-list">
+                  <!-- Alerts injected here -->
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid Row 2 -->
+          <div class="dashboard-grid">
+            <!-- Analytics (Wavelength Line Chart) -->
+            <div class="widget">
+              <div class="widget-header">
+                <h2>Performance Comparison <i class='bx bx-info-circle' style="color:var(--text-secondary); margin-left:4px;"></i></h2>
+                <div class="time-filters">
+                  <span class="time-filter">1W</span>
+                  <span class="time-filter">1M</span>
+                  <span class="time-filter">3M</span>
+                  <span class="time-filter active">6M</span>
+                  <span class="time-filter">1YR</span>
+                  <span class="time-filter">3YR</span>
+                </div>
+                <select class="widget-dropdown"><option>S&P 500</option></select>
+              </div>
+              <div class="chart-container" style="position: relative; height:220px; width:100%;">
+                <canvas id="performance-chart"></canvas>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <span style="font-size:0.75rem; color:var(--text-secondary);">Total Return Fund:</span>
+                <span style="font-size:0.75rem; color:var(--text-primary); display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:50%; background:#a855f7;"></span> US 60/40</span>
+              </div>
+            </div>
+
+            <!-- Risk Indicator -->
+            <div class="widget">
+              <div class="widget-header">
+                <h2>Portfolio Risk Indicator</h2>
+                <i class='bx bx-info-circle' style="color:var(--text-secondary);"></i>
+              </div>
+              <div class="chart-container" style="position: relative; height:140px; width:100%; display:flex; justify-content:center; align-items:flex-end; padding-bottom:10px;">
+                <canvas id="risk-chart"></canvas>
+                <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); text-align:center;">
+                  <div id="risk-score" class="golden-score">0.0<span style="font-size:1.2rem;">/10</span></div>
+                  <p id="risk-label" style="color:var(--text-secondary); font-size:0.8rem; font-weight:600;">Healthy</p>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-top:24px; border-top:1px solid var(--border-color); padding-top:16px;">
+                <div style="text-align:center;">
+                  <span style="color:#a855f7; font-weight:600; font-size:0.9rem;">7.5%</span><br>
+                  <small style="color:var(--text-secondary); font-size:0.7rem;">Portfolio ROI</small>
+                </div>
+                <div style="text-align:center;">
+                  <span style="color:#06b6d4; font-weight:600; font-size:0.9rem;">92%</span><br>
+                  <small style="color:var(--text-secondary); font-size:0.7rem;">AI Prediction</small>
+                </div>
+                <div style="text-align:center;">
+                  <span style="color:#fbbf24; font-weight:600; font-size:0.9rem;" id="risk-micro-score">0.0</span><br>
+                  <small style="color:var(--text-secondary); font-size:0.7rem;">Score</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid Row 3: AI Insights Engine -->
+          <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+            <div class="widget">
+              <div class="widget-header">
+                <h2><i class='bx bx-brain' style="color:var(--primary-color);"></i> Smart Insights Engine</h2>
+                <span style="font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); padding:4px 8px; border-radius:4px;">Live AI Analysis</span>
+              </div>
+              <div class="smart-insights-grid" id="smart-insights-container">
+                <!-- Insight Cards injected here via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Stats -->
+          <div class="bottom-stats-grid">
+            <div class="mini-stat-card">
+              <div class="mini-stat-header">
+                <span>Stock Movement</span>
+                <select class="widget-dropdown" style="border:none; padding:0;"><option>This Week</option></select>
+              </div>
+              <div class="mini-stat-val" id="stat-movement">0</div>
+              <div class="mini-stat-desc">Items Moved</div>
+              <div class="mini-stat-trend"><i class='bx bx-up-arrow-alt'></i> 18.6% from last week</div>
+            </div>
+            
+            <div class="mini-stat-card">
+              <div class="mini-stat-header">
+                <span>Inventory Turnover</span>
+                <select class="widget-dropdown" style="border:none; padding:0;"><option>This Month</option></select>
+              </div>
+              <div class="mini-stat-val">2.48</div>
+              <div class="mini-stat-desc">Turnover Ratio</div>
+              <div class="mini-stat-trend"><i class='bx bx-up-arrow-alt'></i> 12.4% from last month</div>
+            </div>
+
+            <div class="mini-stat-card">
+              <div class="mini-stat-header">
+                <span>Stock Accuracy</span>
+                <select class="widget-dropdown" style="border:none; padding:0;"><option>This Month</option></select>
+              </div>
+              <div class="mini-stat-val">98.7%</div>
+              <div class="mini-stat-desc">Accuracy Rate</div>
+              <div class="mini-stat-trend"><i class='bx bx-up-arrow-alt'></i> 2.1% from last month</div>
+            </div>
+
+            <div class="mini-stat-card">
+              <div class="mini-stat-header">
+                <span>Total Suppliers</span>
+                <i class='bx bx-group' style="color:var(--primary-color); background:rgba(124,58,237,0.1); padding:4px; border-radius:4px;"></i>
+              </div>
+              <div class="mini-stat-val">12</div>
+              <div class="mini-stat-desc">Active Suppliers</div>
+              <a href="#" style="display:block; margin-top:8px; font-size:0.75rem; color:var(--primary-color); text-decoration:none;">View all suppliers →</a>
+            </div>
+
+            <div class="mini-stat-card">
+              <div class="mini-stat-header">
+                <span><i class='bx bxs-trophy' style="color:#fbbf24;"></i> Top Category</span>
+              </div>
+              <div class="mini-stat-val" id="stat-top-cat-name" style="font-size:1.1rem; margin-top:8px;">Loading...</div>
+              <div class="mini-stat-desc" id="stat-top-cat-val">₹0 (0%)</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:8px;">Highest by value</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Inventory View -->
+        <section id="inventory-view" class="view">
+          <div class="toolbar">
+            <div class="search-bar">
+              <i class='bx bx-search'></i>
+              <input type="text" id="search-input" placeholder="Search by name...">
+            </div>
+            
+            <div class="filters">
+              <select id="category-filter">
+                <option value="">All Categories</option>
+              </select>
+              
+              <select id="stock-filter">
+                <option value="">Stock Status</option>
+                <option value="low">Low Stock</option>
+                <option value="out">Out of Stock</option>
+              </select>
+              
+              <select id="sort-filter">
+                <option value="">Sort By</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="quantity_asc">Quantity: Low to High</option>
+                <option value="quantity_desc">Quantity: High to Low</option>
+                <option value="latest">Latest Added</option>
+              </select>
+            </div>
+
+            <button class="btn primary" id="add-product-btn"><i class='bx bx-plus'></i> Add Product</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Products injected here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Activity View -->
+        <section id="activity-view" class="view">
+          <div class="activity-timeline">
+            <h2>Recent Activities</h2>
+            <ul class="timeline" id="activity-timeline-list">
+              <!-- Activities injected here -->
+            </ul>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Product</h2>
+        <button class="close-btn" id="close-modal"><i class='bx bx-x'></i></button>
+      </div>
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="product-name" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <!-- Using input with datalist for combo behavior -->
+          <input type="text" id="product-category" list="category-options" required>
+          <datalist id="category-options">
+            <!-- Options injected here -->
+          </datalist>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" id="product-price" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="product-quantity" min="0" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Low Stock Threshold</label>
+          <input type="number" id="product-threshold" min="0" value="5" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn secondary" id="cancel-modal">Cancel</button>
+          <button type="submit" class="btn primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

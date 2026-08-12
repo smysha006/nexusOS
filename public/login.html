@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Auth - Secure Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    :root {
+      --primary-color: #a855f7;
+      --primary-hover: #9333ea;
+      --bg-color: #0f172a;
+      --surface-color: rgba(30, 41, 59, 0.7);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Ambient Background Glow */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 50%;
+      height: 70%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 60%);
+      z-index: -1;
+    }
+    body::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      right: -10%;
+      width: 50%;
+      height: 70%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+      z-index: -1;
+    }
+
+    .auth-container {
+      background: var(--surface-color);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 48px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .logo i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      text-shadow: 0 0 15px var(--primary-color);
+    }
+
+    .logo h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      margin: 0;
+      background: linear-gradient(to right, #f8fafc, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px 14px 48px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .auth-footer a:hover {
+      color: white;
+    }
+
+    #error-msg {
+      color: #ef4444;
+      font-size: 0.875rem;
+      text-align: center;
+      margin-bottom: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="logo">
+      <i class='bx bx-cube-alt'></i>
+      <h1>Nexus</h1>
+    </div>
+    
+    <div id="error-msg">Invalid credentials</div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrapper">
+          <i class='bx bx-envelope'></i>
+          <input type="email" id="email" placeholder="admin@nexus.io" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <i class='bx bx-lock-alt'></i>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-submit">Sign In to Dashboard</button>
+    </form>
+
+    <div class="auth-footer">
+      No account? <a href="#" id="toggle-auth">Create an Organization</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // For demo purposes, we will just simulate a successful login and redirect
+      const btn = document.querySelector('.btn-submit');
+      btn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Authenticating...';
+      
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
